@@ -1,0 +1,28 @@
+# C
+*.o
+*.lo
+*.so
+*.out
+*.elf
+*.bin
+*.hex
+
+# CMake
+cmake-*
+
+# Build
+build
+build*
+
+# IDE
+.idea
+.vscode
+*.sw*
+
+# MacOS
+.DS_Store
+.locale
+*.dSYM
+
+# Project specific
+upload.sh
