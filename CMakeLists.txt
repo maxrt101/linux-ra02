@@ -53,13 +53,13 @@ project_add_compile_options(ALL
 )
 
 project_add_link_options(ALL
-    -fpic			# Enable position independent code
-    -pie			# Make elf a position independent executable
+    -fpic			      # Enable position independent code
+    -pie			      # Make elf a position independent executable
     -Wl,--cref,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map
     -Wl,-e,__entry	# Set entry to custom __entry function (micro version on libc _start for executable ELFs)
-    -Wl,-E			# Export symbols
-    -lc				# Link libc
-    -lm				# Link libm
+    -Wl,-E			    # Export symbols
+    -lc				      # Link libc
+    -lm				      # Link libm
 )
 
 # Setup size reports
