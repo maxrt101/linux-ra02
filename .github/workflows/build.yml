@@ -1,0 +1,38 @@
+name: Build LinuxRA02
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - '**.c'
+      - '**.h'
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - '**.c'
+      - '**.h'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.28.x'
+
+    - name: Setup Compiler
+      run: |
+        apt install gcc-aarch64-linux-gnu
+
+    - name: Configure
+      run: |
+        export PATH="$PATH"
+        cmake -B build -S . -G "Unix Makefiles"
+
+    - name: Build
+      run: cmake --build build

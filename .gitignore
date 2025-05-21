@@ -10,10 +10,6 @@
 # CMake
 cmake-*
 
-# Build
-build
-build*
-
 # IDE
 .idea
 .vscode
