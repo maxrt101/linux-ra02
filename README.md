@@ -1,7 +1,7 @@
 # RA-02 (SX1278) Driver for Linux
 
 RA-01/RA-02 (SX1278) driver for Linux that uses linux spidev API.  
-Provides APIs to send/receive & configure the module.  
+Provides C & Python APIs to send/receive data & configure the module.  
 
 ### Usage
 
@@ -23,7 +23,7 @@ uint8_t tx_data[] = {1, 2, 3, 4, 5};
 ra02_send(&ra02, tx_data, sizeof(tx_data));
 
 // Run receive for 5s
-TIMEOUT_CREATE(timeout, 5000));
+TIMEOUT_CREATE(timeout, 5000);
 uint8_t rx_data[RA02_MAX_PACKET_SIZE] = {0};
 size_t size = sizeof(rx_data);
 ra02_recv(ra02, rx_data, &size, &timeout);
