@@ -329,7 +329,7 @@ error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble) {
   return E_OK;
 }
 
-error_t ra02_get_rssi(ra02_t * ra02, uint8_t * rssi) {
+error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi) {
   return ra02_read_reg(ra02, RA02_LORA_REG_LAST_PKT_RSSI_VAL, rssi);
 }
 

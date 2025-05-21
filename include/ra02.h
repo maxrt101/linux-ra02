@@ -27,6 +27,9 @@ extern "C" {
 #define RA02_SEND_IRQ_TIMEOUT 500
 #endif
 
+/**
+ * Max packet payload in bytes
+ */
 #define RA02_MAX_PACKET_SIZE 64
 
 /* Macros =================================================================== */
@@ -60,7 +63,7 @@ error_t ra02_set_sync_word(ra02_t * ra02, uint32_t sync_word);
 error_t ra02_set_baudrate(ra02_t * ra02, uint32_t baudrate);
 error_t ra02_set_bandwidth(ra02_t * ra02, uint32_t bandwidth);
 error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble);
-error_t ra02_get_rssi(ra02_t * ra02, uint8_t * rssi);
+error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi);
 error_t ra02_poll_irq_flags(ra02_t * ra02);
 error_t ra02_send(ra02_t * ra02, uint8_t * buf, size_t size);
 error_t ra02_recv(ra02_t * ra02, uint8_t * buf, size_t * size, timeout_t * timeout);
