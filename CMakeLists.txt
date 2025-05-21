@@ -30,13 +30,21 @@ project_add_inc_dirs(${PROJECT_DIR}/include)
 project_add_inc_recursive(${PROJECT_DIR}/include)
 project_add_src_recursive(${PROJECT_DIR}/src)
 
+if (NOT "$ENV{LINUX_RA02_LD_LOADER_PATH}" STREQUAL "")
+	set(LD_LOADER_PATH "$ENV{LINUX_RA02_LD_LOADER_PATH}")
+else ()
+	set(LD_LOADER_PATH "/lib/ld-linux-aarch64.so.1")
+endif ()
+
+message(STATUS "LD_LOADER_PATH=${LD_LOADER_PATH}")
+
 project_add_define(
 	# Logs
 	"LOG_ENABLE_RA02=1"
 	"LOG_ENABLE_MAIN=1"
 
 	# Path to program loader. Platform specific
-	"LD_LOADER_PATH=\"/lib/ld-linux-aarch64.so.1\""
+	"LD_LOADER_PATH=\"${LD_LOADER_PATH}\""
 )
 
 project_add_compile_options(ALL

@@ -6,12 +6,19 @@ on:
     paths:
       - '**.c'
       - '**.h'
+      - '**.py'
   pull_request:
     branches: [ "master" ]
     paths:
       - '**.c'
       - '**.h'
+      - '**.py'
   workflow_dispatch:
+    inputs:
+      ld_loader_path:
+        description: Path to LD Loader on target machine
+        required: false
+        default: "/lib/ld-linux-aarch64.so.1"
 
 jobs:
   build:
@@ -33,6 +40,8 @@ jobs:
       run: |
         export PATH="$PATH"
         cmake -B build -S . -G "Unix Makefiles"
+      env:
+        LINUX_RA02_LD_LOADER_PATH: ${{ inputs.ld_loader_path }}
 
     - name: Build
       run: cmake --build build
