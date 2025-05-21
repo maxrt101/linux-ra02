@@ -27,7 +27,7 @@ jobs:
 
     - name: Setup Compiler
       run: |
-        apt install gcc-aarch64-linux-gnu
+        sudo apt install gcc-aarch64-linux-gnu
 
     - name: Configure
       run: |
