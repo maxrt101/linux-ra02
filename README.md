@@ -3,6 +3,49 @@
 RA-01/RA-02 (SX1278) driver for Linux that uses linux spidev API.  
 Provides APIs to send/receive & configure the module.  
 
+### Usage
+
+#### C API
+```C
+spi_t spi;
+spi_cfg_t spi_cfg;
+
+spi_cfg_default(&spi_cfg);
+spi_init(&spi, &spi_cfg, "/dev/spidev0.0");
+
+ra02_t ra02;
+ra02_cfg_t ra02_cfg = {.spi = &spi};
+
+ra02_init(&ra02, &ra02_cfg);
+
+// Send some bytes
+uint8_t tx_data[] = {1, 2, 3, 4, 5};
+ra02_send(&ra02, tx_data, sizeof(tx_data));
+
+// Run receive for 5s
+TIMEOUT_CREATE(timeout, 5000));
+uint8_t rx_data[RA02_MAX_PACKET_SIZE] = {0};
+size_t size = sizeof(rx_data);
+ra02_recv(ra02, rx_data, &size, &timeout);
+
+ra02_deinit(&ra02);
+spi_deinit(&spi);
+```
+
+#### Python bindings
+```python
+import ra02
+ra02.__init__('./linux_ra02_lib.so')
+spi = ra02.Spi('/dev/spidev0.0')
+rf = ra02.Ra02(spi)
+
+# Send some bytes
+rf.send([1, 2, 3, 4, 5])
+
+# Run receive for 5s
+rf.recv(ra02.Timeout(5000))
+```
+
 ### How to build
 #### Prerequisites
  - CMake (at least 3.27)  
