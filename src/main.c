@@ -136,13 +136,15 @@ int main(int argc, char ** argv) {
 
     WITH_RA02(ra02, spidev) {
       err = ra02_send(ra02, packet, size);
+
+      if (err == E_OK) {
+        log_info("Packet sent");
+      } else {
+        log_error("Failed to send packet: %s", error2str(err));
+      }
     }
 
-    if (err == E_OK) {
-      log_info("Packet sent");
-    } else {
-      log_error("Failed to send packet: %s", error2str(err));
-    }
+    return err == E_OK ? 0 : 1;
   } else if (!strcmp(argv[2], "recv")) {
     if (argc != 4) {
       log_error("Expected TIMEOUT", argv[2]);
@@ -158,18 +160,18 @@ int main(int argc, char ** argv) {
 
     WITH_RA02(ra02, spidev) {
       err = ra02_recv(ra02, packet, &size, &t);
+      if (err == E_OK) {
+        log_printf("[%d]: ", size);
+        for (size_t i = 0; i < size; ++i) {
+          log_printf("%02x ", packet[i]);
+        }
+        log_printf("\n");
+      } else {
+        log_error("ra02_recv: %s", error2str(err));
+      }
     }
 
-    if (err == E_OK) {
-      log_printf("[%d]: ", size);
-      for (size_t i = 0; i < size; ++i) {
-        log_printf("%02x ", packet[i]);
-      }
-      log_printf("\n");
-    } else {
-      log_error("ra02_recv: %s", error2str(err));
-      return 1;
-    }
+    return err == E_OK ? 0 : 1;
   } else {
     log_error("Unknown argument '%s'", argv[2]);
     usage(argv[0]);
@@ -181,6 +183,7 @@ int main(int argc, char ** argv) {
 
 void __entry() {
 #if __aarch64__
+  // By SYSV ABI top of sp is [argc, argv, envp]
   asm volatile (
     "ldr x0, [sp]   \n" // Load argc
     "add x1, sp, #8 \n" // Load argv
