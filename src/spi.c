@@ -65,9 +65,9 @@ error_t spi_transcieve(
   trx.tx_buf = (unsigned long long) tx_buf;
   trx.rx_buf = (unsigned long long) rx_buf;
   trx.len = size;
-  trx.speed_hz = 1000000;
-  trx.delay_usecs = 0;
-  trx.bits_per_word = 8;
+  trx.speed_hz = spi->cfg.speed;
+  trx.delay_usecs = spi->cfg.delay_us;
+  trx.bits_per_word = spi->cfg.bits_per_word;
   trx.cs_change = 0;
 
   return ioctl(spi->fd, SPI_IOC_MESSAGE(1), &trx) == size ? E_OK : E_FAILED;
