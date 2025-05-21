@@ -1,6 +1,8 @@
 import ctypes
 
+
 RA02_DYNLIB = None
+
 
 class spi_cfg_t(ctypes.Structure):
     _fields_ = [
@@ -73,6 +75,7 @@ class Timeout:
     def expire(self):
         RA02_DYNLIB.timeout_expire(ctypes.byref(self.timeout))
 
+
 class ra02_cfg_t(ctypes.Structure):
     _fields_ = [
         ('spi', ctypes.POINTER(spi_t)),
@@ -83,7 +86,6 @@ class ra02_t(ctypes.Structure):
         ('spi', ctypes.POINTER(spi_t)),
         ('irq_flags', ctypes.c_uint8),
     ]
-
 
 class Ra02:
     MAX_PAYLOAD = 64
