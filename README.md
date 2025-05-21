@@ -69,6 +69,7 @@ Warning: tested only on Raspberry PI, but theoretically work on any linux machin
 | 3.3V | 1     |   3V3    |
 
 After connecting add `dtoverlay=spi0-hw-cs` at the end of `/boot/firmware/config.txt`.  
+Reboot the device.  
 
 To send a packet run `./linux_ra02.so /dev/spidev0.0 send 1 2 3 4 5`.  
 Where `1 2 3 4 5` are individual bytes of packet payload (in decimal).   
