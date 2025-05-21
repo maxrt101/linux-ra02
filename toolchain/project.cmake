@@ -1,6 +1,69 @@
 include_guard(GLOBAL)
 
 #
+# @brief Internal macro that setups project flags/options for a target
+#
+macro(__project_setup_target target)
+    # Add include directories
+    target_include_directories(${target} PRIVATE ${PROJECT_INCLUDE_DIRS})
+
+    # Add defines
+    add_compile_definitions(${PROJECT_DEFINES})
+
+    # Add compile options
+    target_compile_options(
+        ${target} PRIVATE
+        ${PROJECT_COMPILE_FLAGS}
+    )
+
+    # Add link options
+    target_link_options(
+        ${target} PRIVATE
+        ${ld_script_options}
+        ${PROJECT_LINK_FLAGS}
+    )
+endmacro()
+
+#
+# @brief Sets up named executable target
+#
+macro(project_setup_executable target)
+    # Add executable with specified .c and .h files
+    add_executable(${target}
+        ${PROJECT_INCLUDES}
+        ${PROJECT_SOURCES}
+    )
+
+    __project_setup_target(${target})
+endmacro()
+
+#
+# @brief Sets up named static library target
+#
+macro(project_setup_static_library target)
+    # Add static library with specified .c and .h files
+    add_library(${target} STATIC
+        ${PROJECT_INCLUDES}
+        ${PROJECT_SOURCES}
+    )
+
+    __project_setup_target(${target})
+endmacro()
+
+#
+# @brief Sets up named shared library target
+#
+macro(project_setup_shared_library target)
+    # Add shared library with specified .c and .h files
+    add_library(${target} SHARED
+        ${PROJECT_INCLUDES}
+        ${PROJECT_SOURCES}
+    )
+
+    __project_setup_target(${target})
+endmacro()
+
+#
 # @brief Start of project configuration section
 #
 # You should place all your code between project_init/project_finish
@@ -46,9 +109,11 @@ endmacro()
 #
 macro(project_finish)
     # Set dependency for LD scripts to every file in the project
-    foreach (source ${PROJECT_SOURCES})
-        set_source_files_properties(${source} PROPERTIES OBJECT_DEPENDS "${PROJECT_LD}")
-    endforeach ()
+    if (NOT "${PROJECT_LD}" STREQUAL "")
+        foreach (source ${PROJECT_SOURCES})
+            set_source_files_properties(${source} PROPERTIES OBJECT_DEPENDS "${PROJECT_LD}")
+        endforeach ()
+    endif ()
 
     set(ld_script_options "")
 
@@ -62,30 +127,7 @@ macro(project_finish)
         list(APPEND ld_script_options "-T${ld}")
     endforeach ()
 
-    # Add executable with specified .c and .h files
-    add_executable(${PROJECT_NAME}
-        ${PROJECT_INCLUDES}
-        ${PROJECT_SOURCES}
-    )
-
-    # Add include directories
-    target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
-
-    # Add defines
-    add_compile_definitions(${PROJECT_DEFINES})
-
-    # Add compile options
-    target_compile_options(
-        ${PROJECT_NAME} PRIVATE
-        ${PROJECT_COMPILE_FLAGS}
-    )
-
-    # Add link options
-    target_link_options(
-        ${PROJECT_NAME} PRIVATE
-        ${ld_script_options}
-        ${PROJECT_LINK_FLAGS}
-    )
+    project_setup_executable(${PROJECT_NAME})
 
     foreach (cb ${PROJECT_FINISH_CALLBACKS})
         message(STATUS "Calling finish callback ${cb}")

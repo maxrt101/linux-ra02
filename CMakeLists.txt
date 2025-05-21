@@ -10,7 +10,7 @@ include(${TOOLCHAIN_DIR}/project.cmake)
 include(${TOOLCHAIN_DIR}/compiler.cmake)
 include(${TOOLCHAIN_DIR}/util.cmake)
 
-compiler_setup(GCC aarch64 unknown-linux-gnu)
+compiler_setup(GCC aarch64 linux-gnu)
 
 project(${PROJECT_NAME} C)
 project_init()
@@ -30,5 +30,12 @@ project_add_link_options(ALL
 
 	-lm
 )
+
+function(__lib_target_setup)
+	project_setup_shared_library(${PROJECT_NAME}-lib)
+	target_link_options(${PROJECT_NAME}-lib PRIVATE -Wl,--dynamic-linker=/lib/ld-linux-aarch64.so.1)
+endfunction()
+
+project_add_finish_callback(__lib_target_setup)
 
 project_finish()
