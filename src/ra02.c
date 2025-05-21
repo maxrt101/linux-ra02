@@ -16,9 +16,21 @@
 #include <log.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
 
 /* Defines ================================================================== */
 #define LOG_TAG RA02
+
+/** Whether to log register operations */
+#ifndef USE_RA02_LOG_REG_OPS
+#define USE_RA02_LOG_REG_OPS 0
+#endif
+
+/** Extended logs for send/recv */
+#ifndef USE_RA02_EXT_LOG_SEND_RECV
+#define USE_RA02_EXT_LOG_SEND_RECV 1
+#endif
+
 
 /** Internal constants */
 #define RA02_MAX_PA           20
@@ -126,8 +138,10 @@ static error_t ra02_write_reg(ra02_t * ra02, uint8_t reg, uint8_t value) {
 
   error_t err = spi_transcieve(ra02->spi, data, NULL, sizeof(data));
 
+#if USE_RA02_LOG_REG_OPS
   log_debug("ra02_write_reg: %s reg=%02x val=%02x data={%02x, %02x}",
             error2str(err), reg, value, data[0], data[1]);
+#endif
 
   return err;
 }
@@ -143,7 +157,9 @@ static error_t ra02_read_reg(ra02_t * ra02, uint8_t reg, uint8_t * value) {
       ra02->spi, tx_data, rx_data, 2
   );
 
+#if USE_RA02_LOG_REG_OPS
   log_debug("ra02_read_reg: %s reg=%02x res={%02x, %02x}", error2str(err), reg, rx_data[0], rx_data[1]);
+#endif
 
   if (err == E_OK) {
     *value = rx_data[1];
@@ -166,6 +182,15 @@ static error_t ra02_write_burst(ra02_t * ra02, uint8_t addr, uint8_t * buf, size
  * Transitions RA-02 to selected OpMode
  */
 static error_t ra02_goto_op_mode(ra02_t * ra02, ra02_op_mode_t mode) {
+  log_debug("ra02_goto_op_mode: %s",
+    mode == RA02_OP_MODE_STANDBY ? "STDBY" :
+    mode == RA02_OP_MODE_SLEEP ? "SLEEP" :
+    mode == RA02_OP_MODE_TX ? "TX" :
+    mode == RA02_OP_MODE_RX_SINGLE ? "RX_S" :
+    mode == RA02_OP_MODE_RX_CONTINUOUS ? "RX_C" :
+    "?"
+  );
+
   return ra02_write_reg(ra02, RA02_REG_OP_MODE, RA02_OP_MODE_LORA_PREFIX | mode);
 }
 
@@ -175,6 +200,8 @@ static error_t ra02_goto_op_mode(ra02_t * ra02, ra02_op_mode_t mode) {
  * @param[in] current Current threshold in mA
  */
 static error_t ra02_set_ocp(ra02_t * ra02, uint8_t current) {
+  log_debug("ra02_set_ocp: %d", current);
+
   current = UTIL_CAP(current, 45, 240);
 
   if (current <= 120) {
@@ -190,6 +217,8 @@ static error_t ra02_set_ocp(ra02_t * ra02, uint8_t current) {
  * Set CRC on/off
  */
 static error_t ra02_set_crc(ra02_t * ra02, bool on) {
+  log_debug("ra02_set_crc: %d", on);
+
   uint8_t data;
   ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, &data));
   // TODO: define modem cfg configuration values
@@ -200,6 +229,8 @@ static error_t ra02_set_crc(ra02_t * ra02, bool on) {
  * Set implicit header mode on/off
  */
 static error_t ra02_set_implicit_header_mode(ra02_t * ra02, bool on) {
+  log_debug("ra02_set_implicit_header_mode: %d", on);
+
   uint8_t data;
   ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_LORA_REG_MODEM_CFG_1, &data));
   return ra02_write_reg(ra02, RA02_LORA_REG_MODEM_CFG_1, on ? (data | 1) : (data & ~(1)));
@@ -209,6 +240,8 @@ static error_t ra02_set_implicit_header_mode(ra02_t * ra02, bool on) {
  * Set RX Symbol timeout
  */
 static error_t ra02_set_rx_symbol_timeout(ra02_t * ra02, uint16_t value) {
+  log_debug("ra02_set_rx_symbol_timeout: %d", value);
+
   uint8_t data;
   ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, &data));
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, data | ((value >> 8) & 0x3)));
@@ -219,6 +252,8 @@ static error_t ra02_set_rx_symbol_timeout(ra02_t * ra02, uint16_t value) {
  * Set Spreading Factor
  */
 static error_t ra02_set_sf(ra02_t * ra02, uint8_t sf) {
+  log_debug("ra02_set_sf: %d", sf);
+
   uint8_t data;
   sf = UTIL_CAP(sf, 7, 12);
   ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, &data));
@@ -228,6 +263,8 @@ static error_t ra02_set_sf(ra02_t * ra02, uint8_t sf) {
 
 /* Shared functions ========================================================= */
 error_t ra02_init(ra02_t * ra02, ra02_cfg_t * cfg) {
+  ASSERT_RETURN(ra02 && cfg && cfg->spi, E_NULL);
+
   ra02->spi         = cfg->spi;
   // ra02->reset       = cfg->ra02->reset;
   ra02->irq_flags   = 0;
@@ -260,10 +297,18 @@ error_t ra02_init(ra02_t * ra02, ra02_cfg_t * cfg) {
 }
 
 error_t ra02_deinit(ra02_t * ra02) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_deinit");
+
   return E_OK;
 }
 
 error_t ra02_reset(ra02_t * ra02) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_reset");
+
   // TODO: Fix reset
   // gpio_clear(ra02->reset);
   // sleep_ms(10);
@@ -273,10 +318,18 @@ error_t ra02_reset(ra02_t * ra02) {
 }
 
 error_t ra02_sleep(ra02_t * ra02) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_sleep");
+
   return ra02_goto_op_mode(ra02, RA02_OP_MODE_SLEEP);
 }
 
 error_t ra02_set_freq(ra02_t * ra02, uint32_t khz) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_set_freq: %d kHz", khz);
+
   uint32_t freq = ((khz/1000) * 524288) >> 5;
 
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_REG_FRF_MSB, freq >> 16));
@@ -290,13 +343,20 @@ error_t ra02_set_freq(ra02_t * ra02, uint32_t khz) {
 }
 
 error_t ra02_get_power(ra02_t * ra02, int8_t * db) {
+  ASSERT_RETURN(ra02 && db, E_NULL);
+
   return ra02_read_reg(ra02, RA02_REG_PA_CFG, db);
 }
 
 error_t ra02_set_power(ra02_t * ra02, int8_t db) {
+  ASSERT_RETURN(ra02, E_NULL);
+
   if (db < 0 || db > RA02_MAX_PA) {
     return E_INVAL;
   }
+
+  log_debug("ra02_set_power: %d db", db);
+
   UTIL_MAP_RANGE_TABLE(ra02_power_mapping_db, db, db);
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_REG_PA_CFG, db));
   usleep(10000);
@@ -304,16 +364,28 @@ error_t ra02_set_power(ra02_t * ra02, int8_t db) {
 }
 
 error_t ra02_set_sync_word(ra02_t * ra02, uint32_t sync_word) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_set_sync_word: %x", sync_word);
+
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_LORA_REG_SYNC_WORD, sync_word));
   usleep(10000);
   return E_OK;
 }
 
 error_t ra02_set_baudrate(ra02_t * ra02, uint32_t baudrate) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_set_baudrate: %d", baudrate);
+
   return E_NOTIMPL;
 }
 
 error_t ra02_set_bandwidth(ra02_t * ra02, uint32_t bandwidth) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_set_bandwidth: %d", bandwidth);
+
   UTIL_MAP_RANGE_TABLE(ra02_bandwidth_mapping_hz, bandwidth, bandwidth);
 
   uint8_t data;
@@ -324,16 +396,25 @@ error_t ra02_set_bandwidth(ra02_t * ra02, uint32_t bandwidth) {
 }
 
 error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_set_preamble: %d", preamble);
+
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_LORA_REG_PREAMBLE_MSB, preamble >> 8));
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_LORA_REG_PREAMBLE_LSB, preamble));
+
   return E_OK;
 }
 
 error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi) {
+  ASSERT_RETURN(ra02 && rssi, E_NULL);
+
   return ra02_read_reg(ra02, RA02_LORA_REG_LAST_PKT_RSSI_VAL, rssi);
 }
 
 error_t ra02_poll_irq_flags(ra02_t * ra02) {
+  ASSERT_RETURN(ra02, E_NULL);
+
   ra02_read_reg(ra02, RA02_LORA_REG_IRQ_FLAGS, &ra02->irq_flags);
   ra02_write_reg(ra02, RA02_LORA_REG_IRQ_FLAGS, ra02->irq_flags);
 
@@ -343,6 +424,21 @@ error_t ra02_poll_irq_flags(ra02_t * ra02) {
 }
 
 error_t ra02_send(ra02_t * ra02, uint8_t * buf, size_t size) {
+  ASSERT_RETURN(ra02 && buf && size, E_NULL);
+
+#if USE_RA02_EXT_LOG_SEND_RECV
+  char payload[256] = {0};
+  size_t ofs = 0;
+
+  for (size_t i = 0; i < size; ++i) {
+    ofs += snprintf(payload + ofs, sizeof(payload) - ofs, "%02x ", buf[i]);
+  }
+
+  log_debug("ra02_send: [%d]: %s", size, payload);
+#else
+  log_debug("ra02_send: %d bytes", size);
+#endif
+
   error_t err = E_OK;
   uint8_t data;
 
@@ -381,6 +477,10 @@ error_t ra02_send(ra02_t * ra02, uint8_t * buf, size_t size) {
 }
 
 error_t ra02_recv(ra02_t * ra02, uint8_t * buf, size_t * size, timeout_t * timeout) {
+  ASSERT_RETURN(ra02 && buf && size && *size && timeout, E_NULL);
+
+  log_debug("ra02_recv: %d ticks", timeout->duration);
+
   uint8_t data;
 
   ra02->irq_flags = 0;
@@ -416,6 +516,20 @@ error_t ra02_recv(ra02_t * ra02, uint8_t * buf, size_t * size, timeout_t * timeo
       }
 
       ERROR_CHECK_RETURN(ra02_goto_op_mode(ra02, RA02_OP_MODE_SLEEP));
+
+#if USE_RA02_EXT_LOG_SEND_RECV
+      char payload[256] = {0};
+      size_t ofs = 0;
+
+      for (size_t i = 0; i < *size; ++i) {
+        ofs += snprintf(payload + ofs, sizeof(payload) - ofs, "%02x ", buf[i]);
+      }
+
+      log_debug("ra02_recv: [%d]: %s", *size, payload);
+#else
+      log_debug("ra02_recv: %d bytes", *size);
+#endif
+
       return E_OK;
     }
   }
