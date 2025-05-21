@@ -35,7 +35,7 @@ spi_deinit(&spi);
 #### Python bindings
 ```python
 import ra02
-ra02.__init__('./linux_ra02_lib.so')
+ra02.__init__('./linux_ra02.so')
 spi = ra02.Spi('/dev/spidev0.0')
 rf = ra02.Ra02(spi)
 
@@ -68,8 +68,8 @@ Warning: tested only on Raspberry PI, but theoretically work on any linux machin
 | GND  | Any   |   GND    |
 | 3.3V | 1     |   3V3    |
 
-To send a packet run `./linux_ra02.elf /dev/spidev0.0 send 1 2 3 4 5`.  
+To send a packet run `./linux_ra02.so /dev/spidev0.0 send 1 2 3 4 5`.  
 Where `1 2 3 4 5` are individual bytes of packet payload (in decimal).   
 
-To receive a packet run `./linux_ra02.elf /dev/spidev0.0 recv 5000`.  
+To receive a packet run `./linux_ra02.so /dev/spidev0.0 recv 5000`.  
 Where `5000` is receiver timeout in milliseconds.   
