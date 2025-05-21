@@ -1,6 +1,6 @@
 /** ========================================================================= *
  *
- * @file spi.c
+ * @file main.c
  * @date 20-05-2025
  * @author Maksym Tkachuk <max.r.tkachuk@gmail.com>
  *
