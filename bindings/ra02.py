@@ -481,7 +481,11 @@ def __init__(dynlib_path: str):
     RA02_DYNLIB.spi_cfg_default.restype = ctypes.c_int
 
     # error_t spi_init(spi_t * spi, spi_cfg_t * cfg, const char * dev);
-    RA02_DYNLIB.spi_init.argtypes = [ctypes.POINTER(spi_t), ctypes.POINTER(spi_cfg_t), ctypes.c_char_p]
+    RA02_DYNLIB.spi_init.argtypes = [
+        ctypes.POINTER(spi_t),
+        ctypes.POINTER(spi_cfg_t),
+        ctypes.c_char_p
+    ]
     RA02_DYNLIB.spi_init.restype = ctypes.c_int
 
     # error_t spi_deinit(spi_t * spi);
@@ -570,9 +574,18 @@ def __init__(dynlib_path: str):
     RA02_DYNLIB.ra02_poll_irq_flags.restype = ctypes.c_int
 
     # error_t ra02_send(ra02_t * ra02, uint8_t * buf, size_t size);
-    RA02_DYNLIB.ra02_send.argtypes = [ctypes.POINTER(ra02_t), ctypes.POINTER(ctypes.c_uint8), ctypes.c_size_t]
+    RA02_DYNLIB.ra02_send.argtypes = [
+        ctypes.POINTER(ra02_t),
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t
+    ]
     RA02_DYNLIB.ra02_send.restype = ctypes.c_int
 
     # error_t ra02_recv(ra02_t * ra02, uint8_t * buf, size_t * size, timeout_t * timeout);
-    RA02_DYNLIB.ra02_recv.argtypes = [ctypes.POINTER(ra02_t), ctypes.POINTER(ctypes.c_uint8), ctypes.POINTER(ctypes.c_size_t), ctypes.POINTER(timeout_t)]
+    RA02_DYNLIB.ra02_recv.argtypes = [
+        ctypes.POINTER(ra02_t),
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(timeout_t)
+    ]
     RA02_DYNLIB.ra02_recv.restype = ctypes.c_int
