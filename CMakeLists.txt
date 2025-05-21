@@ -31,41 +31,41 @@ project_add_inc_recursive(${PROJECT_DIR}/include)
 project_add_src_recursive(${PROJECT_DIR}/src)
 
 if (NOT "$ENV{LINUX_RA02_LD_LOADER_PATH}" STREQUAL "")
-	set(LD_LOADER_PATH "$ENV{LINUX_RA02_LD_LOADER_PATH}")
+  set(LD_LOADER_PATH "$ENV{LINUX_RA02_LD_LOADER_PATH}")
 else ()
-	set(LD_LOADER_PATH "/lib/ld-linux-aarch64.so.1")
+  set(LD_LOADER_PATH "/lib/ld-linux-aarch64.so.1")
 endif ()
 
 message(STATUS "LD_LOADER_PATH=${LD_LOADER_PATH}")
 
 project_add_define(
-	# Logs
-	"LOG_ENABLE_RA02=1"
-	"LOG_ENABLE_MAIN=1"
+    # Logs
+    "LOG_ENABLE_RA02=1"
+    "LOG_ENABLE_MAIN=1"
 
-	# Path to program loader. Platform specific
-	"LD_LOADER_PATH=\"${LD_LOADER_PATH}\""
+    # Path to program loader. Platform specific
+    "LD_LOADER_PATH=\"${LD_LOADER_PATH}\""
 )
 
 project_add_compile_options(ALL
-	-fpic	# Enable position independent code
-	-pie	# Make elf a position independent executable
+    -fpic	# Enable position independent code
+    -pie	# Make elf a position independent executable
 )
 
 project_add_link_options(ALL
-	-fpic			# Enable position independent code
-	-pie			# Make elf a position independent executable
-	-Wl,--cref,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map
-	-Wl,-e,__entry	# Set entry to custom __entry function (micro version on libc _start for executable ELFs)
-	-Wl,-E			# Export symbols
-	-lc				# Link libc
-	-lm				# Link libm
+    -fpic			# Enable position independent code
+    -pie			# Make elf a position independent executable
+    -Wl,--cref,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map
+    -Wl,-e,__entry	# Set entry to custom __entry function (micro version on libc _start for executable ELFs)
+    -Wl,-E			# Export symbols
+    -lc				# Link libc
+    -lm				# Link libm
 )
 
 # Setup size reports
 function(__size_report_setup)
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-					   COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${PROJECT_NAME}>)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+      COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${PROJECT_NAME}>)
 endfunction()
 
 project_add_finish_callback(__size_report_setup)
