@@ -119,7 +119,7 @@ class Ra02:
     def get_power(self):
         db = ctypes.c_uint8()
         RA02_DYNLIB.ra02_get_power(ctypes.byref(self.ra02), ctypes.byref(db))
-        return int(db)
+        return db.value
 
     def set_power(self, db: int):
         RA02_DYNLIB.ra02_set_power(ctypes.byref(self.ra02), ctypes.c_uint32(db))
@@ -139,7 +139,7 @@ class Ra02:
     def get_rssi(self):
         rssi = ctypes.c_uint8()
         RA02_DYNLIB.ra02_get_rssi(ctypes.byref(self.ra02), ctypes.byref(rssi))
-        return int(rssi)
+        return rssi.value
 
     def poll_irq_flags(self):
         RA02_DYNLIB.ra02_poll_irq_flags(ctypes.byref(self.ra02))
@@ -155,7 +155,7 @@ class Ra02:
 
         RA02_DYNLIB.ra02_recv(ctypes.byref(self.ra02), buf, ctypes.byref(size), ctypes.byref(timeout.timeout))
 
-        return list(buf)[:int(size)]
+        return list(buf)[:size.value]
 
 
 def __init__(dynlib_path: str):
