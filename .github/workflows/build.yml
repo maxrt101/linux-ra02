@@ -36,3 +36,15 @@ jobs:
 
     - name: Build
       run: cmake --build build
+
+    - name: Archive driver library
+      uses: actions/upload-artifact@v4
+      with:
+        name: ra02-library
+        path: build/liblinux-ra02.so
+
+    - name: Archive python bindings
+      uses: actions/upload-artifact@v4
+      with:
+        name: ra02-py
+        path: bindings/ra02.py
