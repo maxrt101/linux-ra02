@@ -267,7 +267,7 @@ macro(project_add_compile_options target)
         endforeach ()
     endmacro()
 
-    if (${target} STREQUAL ALL OR ${target} STREQUAL ${CMAKE_BUILD_TYPE})
+    if (${target} STREQUAL ALL OR ${target} STREQUAL "${CMAKE_BUILD_TYPE}")
         __add_compile_options(${ARGV})
     endif ()
 endmacro()
