@@ -428,7 +428,8 @@ error_t ra02_poll_irq_flags(ra02_t * ra02) {
 }
 
 error_t ra02_send(ra02_t * ra02, uint8_t * buf, size_t size) {
-  ASSERT_RETURN(ra02 && buf && size, E_NULL);
+  ASSERT_RETURN(ra02 && buf, E_NULL);
+  ASSERT_RETURN(size, E_INVAL);
 
 #if USE_RA02_EXT_LOG_SEND_RECV
   char payload[256] = {0};
@@ -481,7 +482,8 @@ error_t ra02_send(ra02_t * ra02, uint8_t * buf, size_t size) {
 }
 
 error_t ra02_recv(ra02_t * ra02, uint8_t * buf, size_t * size, timeout_t * timeout) {
-  ASSERT_RETURN(ra02 && buf && size && *size && timeout, E_NULL);
+  ASSERT_RETURN(ra02 && buf && size && timeout, E_NULL);
+  ASSERT_RETURN(*size, E_INVAL);
 
   log_debug("ra02_recv: %d ticks", timeout->duration);
 
