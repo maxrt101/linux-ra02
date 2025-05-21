@@ -73,7 +73,7 @@ endmacro()
 #   project_add_inc_dirs
 #   etc.
 #
-macro(project_init)
+macro(project_init project_type)
     if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
         message(FATAL_ERROR "Prevent build in source directory")
     endif ()
@@ -85,6 +85,8 @@ macro(project_init)
     if (PROJECT_VERBOSE STREQUAL 1)
         set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "Verbose makefile" FORCE)
     endif ()
+
+    set(PROJECT_TYPE "${project_type}")
 
     set(PROJECT_INCLUDE_DIRS "")
     set(PROJECT_INCLUDES "")
@@ -127,7 +129,15 @@ macro(project_finish)
         list(APPEND ld_script_options "-T${ld}")
     endforeach ()
 
-    project_setup_executable(${PROJECT_NAME})
+    if (${PROJECT_TYPE} STREQUAL EXECUTABLE)
+        project_setup_executable(${PROJECT_NAME})
+    elseif (${PROJECT_TYPE} STREQUAL STATIC)
+        project_setup_static_library(${PROJECT_NAME})
+    elseif (${PROJECT_TYPE} STREQUAL SHARED)
+        project_setup_shared_library(${PROJECT_NAME})
+    else ()
+        message(FATAL_ERROR "Unknown PROJECT_TYPE '${PROJECT_TYPE}'")
+    endif ()
 
     foreach (cb ${PROJECT_FINISH_CALLBACKS})
         message(STATUS "Calling finish callback ${cb}")

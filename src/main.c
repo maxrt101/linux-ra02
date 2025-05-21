@@ -29,6 +29,8 @@ enum __ra02_action {
 
 /* Types ==================================================================== */
 /* Variables ================================================================ */
+const char ld_interp[] __attribute__((section(".interp"))) = LD_LOADER_PATH;
+
 /* Private functions ======================================================== */
 static void __ra02_static_action(int action, ...) {
   static ra02_t ra02;
@@ -175,4 +177,18 @@ int main(int argc, char ** argv) {
   }
 
   return 0;
+}
+
+void __entry() {
+#if __aarch64__
+  asm volatile (
+    "ldr x0, [sp]   \n" // Load argc
+    "add x1, sp, #8 \n" // Load argv
+    "bl main        \n" // Call main
+    "mov x8, #93    \n" // exit() syscall number
+    "svc #0         \n" // Execute syscall
+  );
+#else
+  #error "Unsupported architecture"
+#endif
 }

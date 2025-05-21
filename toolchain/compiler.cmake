@@ -26,6 +26,8 @@ macro(compiler_setup family target abi)
 
     message(STATUS "Setting up compiler (${family} at ${compiler_folder})")
 
+    set(PROJECT_COMPILER_FOLDER "${compiler_folder}/../")
+
     set(CMAKE_C_COMPILER_ID ${CMAKE_COMPILER_ID} CACHE STRING "" FORCE)
     set(CMAKE_C_COMPILER_VERSION ${version} CACHE STRING "" FORCE)
     set(CMAKE_C_COMPILER "${compiler_folder}/${prefix}-gcc" CACHE STRING "" FORCE)
@@ -84,4 +86,11 @@ macro(compiler_setup family target abi)
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+endmacro()
+
+macro(compiler_get_filepath path name)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=${name}
+            OUTPUT_VARIABLE ${path}
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 endmacro()
