@@ -342,13 +342,17 @@ error_t ra02_set_freq(ra02_t * ra02, uint32_t khz) {
   return E_OK;
 }
 
-error_t ra02_get_power(ra02_t * ra02, int8_t * db) {
+error_t ra02_get_power(ra02_t * ra02, uint8_t * db) {
   ASSERT_RETURN(ra02 && db, E_NULL);
 
-  return ra02_read_reg(ra02, RA02_REG_PA_CFG, db);
+  ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_REG_PA_CFG, db));
+
+  UTIL_MAP_RANGE_TABLE_REV(ra02_power_mapping_db, *db, *db);
+
+  return E_OK;
 }
 
-error_t ra02_set_power(ra02_t * ra02, int8_t db) {
+error_t ra02_set_power(ra02_t * ra02, uint8_t db) {
   ASSERT_RETURN(ra02, E_NULL);
 
   if (db < 0 || db > RA02_MAX_PA) {

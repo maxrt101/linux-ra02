@@ -89,6 +89,29 @@ extern "C" {
   } while (0)
 
 /**
+ * Finds a range from mapped value, reverse operation to UTIL_MAP_RANGE_TABLE
+ *
+ * Table is a list of util_map_range_table_entry_t, which represents
+ * range [from, to] and corresponding value for this range
+ *
+ * @note if value is not in range, result won't be set
+ *
+ * @param[in]  table A list of util_map_range_table_entry_t
+ * @param[in]  value Value that corresponds to util_map_range_table_entry_t::value
+ * @param[out] result Variable to put the result in
+ *
+ */
+#define UTIL_MAP_RANGE_TABLE_REV(_table, _value, _result)                       \
+  do {                                                                          \
+    for (int i = 0; ((_table)[i].from && (_table)[i].to); ++i) {                \
+      if ((_value) == (_table)[i].value) {                                      \
+         (_result) = (_table)[i].from;                                          \
+         break;                                                                 \
+      }                                                                         \
+    }                                                                           \
+  } while (0)
+
+/**
  * Gets first arg from the pack
  */
 #define UTIL_GET_ARG1(x, ...) x
