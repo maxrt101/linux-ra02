@@ -1,3 +1,13 @@
+# =========================================================================
+#
+# @file CMakeLists.txt
+# @date 20-05-2025
+# @author Maksym Tkachuk <max.r.tkachuk@gmail.com>
+#
+# @brief LinuxRA02 Project
+#
+# =========================================================================
+
 cmake_minimum_required(VERSION 3.30)
 
 set(PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}")

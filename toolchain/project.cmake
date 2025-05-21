@@ -1,3 +1,13 @@
+# =========================================================================
+#
+# @file project.cmake
+# @date 20-05-2025
+# @author Maksym Tkachuk <max.r.tkachuk@gmail.com>
+#
+# @brief CMake Project support
+#
+# =========================================================================
+
 include_guard(GLOBAL)
 
 #
@@ -72,6 +82,8 @@ endmacro()
 #   project_add_src_recursive
 #   project_add_inc_dirs
 #   etc.
+#
+# @param[in] project_type Type of project: EXECUTABLE, STATIC or SHARED
 #
 macro(project_init project_type)
     if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})

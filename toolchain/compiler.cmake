@@ -1,5 +1,19 @@
+# =========================================================================
+#
+# @file compiler.cmake
+# @date 20-05-2025
+# @author Maksym Tkachuk <max.r.tkachuk@gmail.com>
+#
+# @brief CMake toolchain compiler support
+#
+# =========================================================================
+
+
 include_guard(GLOBAL)
 
+#
+# @brief Retrieves compiler folder from executable name
+#
 macro(compiler_get_folder bin folder)
     bin_which(${bin} bin_path)
     if ("${bin_path}" MATCHES "not found" OR "${bin_path}" STREQUAL "")
@@ -14,6 +28,9 @@ macro(compiler_get_folder bin folder)
     set(${folder} ${compiler_path})
 endmacro()
 
+#
+# @brief Sets up compiler, based on family, target abd ABI
+#
 macro(compiler_setup family target abi)
     if (NOT ${family} STREQUAL GCC)
         message(FATAL_ERROR "Unsupported compiler family ${family}")
@@ -80,6 +97,7 @@ macro(compiler_setup family target abi)
     set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY CACHE STRING "" FORCE)
     set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" CACHE STRING "" FORCE)
 
+    # TODO: Make generic (maybe receive from user, or infer from compiler)
     set(CMAKE_SYSTEM_NAME Linux CACHE STRING "" FORCE)
     set(CMAKE_SYSTEM_PROCESSOR aarch64 CACHE STRING "" FORCE)
 
@@ -88,6 +106,9 @@ macro(compiler_setup family target abi)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endmacro()
 
+#
+# @brief Gets full path of file within compiler installation directory
+#
 macro(compiler_get_filepath path name)
     execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=${name}
             OUTPUT_VARIABLE ${path}
