@@ -206,7 +206,7 @@ def __init__(dynlib_path: str):
     RA02_DYNLIB.ra02_set_freq.argtypes = [ctypes.POINTER(ra02_t), ctypes.c_uint32]
     RA02_DYNLIB.ra02_set_freq.restype = ctypes.c_int
 
-    RA02_DYNLIB.ra02_get_power.argtypes = [ctypes.POINTER(ra02_t), ctypes.POINTER(ctypes.c_uint32)]
+    RA02_DYNLIB.ra02_get_power.argtypes = [ctypes.POINTER(ra02_t), ctypes.POINTER(ctypes.c_uint8)]
     RA02_DYNLIB.ra02_get_power.restype = ctypes.c_int
 
     RA02_DYNLIB.ra02_set_power.argtypes = [ctypes.POINTER(ra02_t), ctypes.c_uint32]
