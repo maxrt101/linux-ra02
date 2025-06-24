@@ -17,7 +17,7 @@
 #   rf = ra02.Ra02(spi)
 #
 #   # Send some bytes
-#   rf.send([1, 2, 3, 4, 5])
+#   rf.send(bytes([1, 2, 3, 4, 5]))
 #
 #   # Run receive for 5s
 #   rf.recv(ra02.Timeout(5000))
@@ -437,7 +437,7 @@ class Ra02:
 
         RA02_DYNLIB.ra02_poll_irq_flags(ctypes.byref(self.ra02))
 
-    def send(self, data: list[int]):
+    def send(self, data: bytes):
         """
         Send data over radio
 
@@ -448,7 +448,7 @@ class Ra02:
 
         error_check(RA02_DYNLIB.ra02_send(ctypes.byref(self.ra02), buf, ctypes.c_size_t(len(data))))
 
-    def recv(self, timeout: Timeout) -> list[int]:
+    def recv(self, timeout: Timeout) -> bytes:
         """
         Receive data over radio for specified amount of time
 
@@ -461,7 +461,7 @@ class Ra02:
 
         error_check(RA02_DYNLIB.ra02_recv(ctypes.byref(self.ra02), buf, ctypes.byref(size), ctypes.byref(timeout.timeout)))
 
-        return list(buf)[:size.value]
+        return bytes(buf[:size.value])
 
 
 def __init__(dynlib_path: str):
