@@ -19,6 +19,14 @@ on:
         description: Path to LD Loader on target machine
         required: false
         default: "/lib/ld-linux-aarch64.so.1"
+      main_logs:
+        description: Logs for main.c
+        required: false
+        default: 0
+      ra02_logs:
+        description: Logs for ra02.c
+        required: false
+        default: 0
 
 jobs:
   build:
@@ -41,7 +49,9 @@ jobs:
         export PATH="$PATH"
         cmake -B build -S . -G "Unix Makefiles"
       env:
-        LINUX_RA02_LD_LOADER_PATH: ${{ inputs.ld_loader_path }}
+        LD_LOADER_PATH: ${{ inputs.ld_loader_path }}
+        LOG_ENABLE_MAIN: ${{ inputs.main_logs }}
+        LOG_ENABLE_RA02: ${{ inputs.ra02_logs }}
 
     - name: Build
       run: cmake --build build
