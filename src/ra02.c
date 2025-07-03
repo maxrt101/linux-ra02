@@ -413,7 +413,7 @@ error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble) {
 error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi) {
   ASSERT_RETURN(ra02 && rssi, E_NULL);
 
-  return ra02_read_reg(ra02, RA02_LORA_REG_LAST_PKT_RSSI_VAL, rssi);
+  return ra02_read_reg(ra02, RA02_LORA_REG_RSSI_VAL, rssi);
 }
 
 error_t ra02_poll_irq_flags(ra02_t * ra02) {
