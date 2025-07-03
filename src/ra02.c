@@ -413,7 +413,9 @@ error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble) {
 error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi) {
   ASSERT_RETURN(ra02 && rssi, E_NULL);
 
-  return ra02_read_reg(ra02, RA02_LORA_REG_RSSI_VAL, rssi);
+  *rssi = ra02->last_rssi;
+
+  return E_OK;
 }
 
 error_t ra02_poll_irq_flags(ra02_t * ra02) {
@@ -505,6 +507,10 @@ error_t ra02_recv(ra02_t * ra02, uint8_t * buf, size_t * size, timeout_t * timeo
     }
 
     ra02_poll_irq_flags(ra02);
+
+    if (ra02->irq_flags & RA02_LORA_IRQ_FLAGS_VALID_HDR) {
+        ra02_read_reg(ra02, RA02_LORA_REG_RSSI_VAL, &ra02->last_rssi);
+    }
 
     if (ra02->irq_flags & RA02_LORA_IRQ_FLAGS_RX_DONE) {
       ERROR_CHECK_RETURN(ra02_goto_op_mode(ra02, RA02_OP_MODE_STANDBY));

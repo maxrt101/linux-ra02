@@ -48,6 +48,7 @@ typedef struct {
 typedef struct {
   spi_t * spi;
   uint8_t irq_flags;
+  int8_t last_rssi;
 } ra02_t;
 
 /* Variables ================================================================ */
