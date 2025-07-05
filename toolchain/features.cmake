@@ -25,7 +25,7 @@ foreach (feature ${FEATURE_TOGGLES})
     feature_parse_name_value(${feature} name default)
     feature_get_value(${name} val)
 
-    if (${val} STREQUAL UNDEFINED)
+    if ("${val}" STREQUAL "UNDEFINED")
         message(STATUS "Feature ${name} using default value ${default}")
         add_compile_definitions(${feature})
     else ()
