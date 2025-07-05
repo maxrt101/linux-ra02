@@ -9,7 +9,6 @@
 /* Includes ================================================================= */
 #include <timeout.h>
 #include <assertion.h>
-#include <math.h>
 #include <time.h>
 
 /* Defines ================================================================== */
@@ -23,7 +22,7 @@ static uint64_t get_system_time_ms(void) {
 
   clock_gettime(CLOCK_REALTIME, &spec);
 
-  return spec.tv_sec * 1000 + floor(spec.tv_nsec / 1.0e6);
+  return spec.tv_sec * 1000 + (spec.tv_nsec / 1.0e6);
 }
 
 /* Shared functions ========================================================= */
