@@ -248,19 +248,6 @@ static error_t ra02_set_rx_symbol_timeout(ra02_t * ra02, uint16_t value) {
   return ra02_write_reg(ra02, RA02_LORA_REG_SYMB_TIMEOUT_LSB, value & 0xFF); /* Set timeout to max */
 }
 
-/**
- * Set Spreading Factor
- */
-static error_t ra02_set_sf(ra02_t * ra02, uint8_t sf) {
-  log_debug("ra02_set_sf: %d", sf);
-
-  uint8_t data;
-  sf = UTIL_CAP(sf, 7, 12);
-  ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, &data));
-  // TODO: define modem cfg configuration values
-  return ra02_write_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, (sf << 4) | data);
-}
-
 /* Shared functions ========================================================= */
 error_t ra02_init(ra02_t * ra02, ra02_cfg_t * cfg) {
   ASSERT_RETURN(ra02 && cfg && cfg->spi, E_NULL);
@@ -408,6 +395,18 @@ error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble) {
   ERROR_CHECK_RETURN(ra02_write_reg(ra02, RA02_LORA_REG_PREAMBLE_LSB, preamble));
 
   return E_OK;
+}
+
+error_t ra02_set_sf(ra02_t * ra02, uint8_t sf) {
+  ASSERT_RETURN(ra02, E_NULL);
+
+  log_debug("ra02_set_sf: %d", sf);
+
+  uint8_t data;
+  sf = UTIL_CAP(sf, 6, 12);
+  ERROR_CHECK_RETURN(ra02_read_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, &data));
+  // TODO: define modem cfg configuration values
+  return ra02_write_reg(ra02, RA02_LORA_REG_MODEM_CFG_2, (sf << 4) | data);
 }
 
 error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi) {

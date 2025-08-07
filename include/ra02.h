@@ -139,6 +139,11 @@ error_t ra02_set_bandwidth(ra02_t * ra02, uint32_t bandwidth);
 error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble);
 
 /**
+ * Set Spreading Factor
+ */
+error_t ra02_set_sf(ra02_t * ra02, uint8_t sf);
+
+/**
  * Retrieves current RSSI
  *
  * @param ra02 RA02 Context

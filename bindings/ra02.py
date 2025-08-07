@@ -418,6 +418,14 @@ class Ra02:
         """
         error_check(RA02_DYNLIB.ra02_set_preamble(ctypes.byref(self.ra02), ctypes.c_uint32(preamble)))
 
+    def set_sf(self, sf: int):
+        """
+        Set Spreading Factor
+
+        :param sf: Spreading Factor
+        """
+        error_check(RA02_DYNLIB.ra02_set_sf(ctypes.byref(self.ra02), ctypes.c_uint8(sf)))
+
     def get_rssi(self):
         """
         Returns current measured RSSI
@@ -564,6 +572,10 @@ def __init__(dynlib_path: str):
     # error_t ra02_set_preamble(ra02_t * ra02, uint32_t preamble);
     RA02_DYNLIB.ra02_set_preamble.argtypes = [ctypes.POINTER(ra02_t), ctypes.c_uint32]
     RA02_DYNLIB.ra02_set_preamble.restype = ctypes.c_int
+
+    # error_t ra02_set_sf(ra02_t * ra02, uint8_t sf);
+    RA02_DYNLIB.ra02_set_sf.argtypes = [ctypes.POINTER(ra02_t), ctypes.c_uint8]
+    RA02_DYNLIB.ra02_set_sf.restype = ctypes.c_int
 
     # error_t ra02_get_rssi(ra02_t * ra02, int8_t * rssi);
     RA02_DYNLIB.ra02_get_rssi.argtypes = [ctypes.POINTER(ra02_t), ctypes.POINTER(ctypes.c_uint8)]
