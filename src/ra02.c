@@ -37,7 +37,7 @@
 
 /** Default internal ra02 configuration parameters */
 #define RA02_DEFAULT_CRC_RATE RA02_CRC_RATE_4_7 /* CRC Rate */
-#define RA02_DEFAULT_SF       8                 /* Spreading Factor */
+#define RA02_DEFAULT_SF       6                 /* Spreading Factor */
 #define RA02_DEFAULT_OCP_MA   120               /* OverCurrentProtection is mA */
 
 /** Initial ra02 configuration parameters */
